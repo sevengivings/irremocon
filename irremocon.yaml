@@ -14,6 +14,10 @@ api:
 ota:
   password: ""
 
+# secret.yaml 
+# domain: .local
+# wifi_ssid: "iptime_extender"
+# wifi_password: "XXXXXXXXXX"
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -63,6 +67,7 @@ light:
     output: esphome_ir1_led
     id: light_led
 
+# Use another temperature sensor in Home Assistant 
 sensor:
   - platform: homeassistant 
     entity_id: sensor.a4c1383321fe_temperature
@@ -73,6 +78,7 @@ climate:
     name: "Living Room AC"
     sensor: room_temperature
 
+# to capture your own raw data, set dump: raw 
 switch: 
   - platform: template
     name: Raw_0 Power
