@@ -1,0 +1,106 @@
+esphome:
+  name: irremocon
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: !secret domain
+
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: 192.168.0.77
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: 192.168.0.1
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "irremocon Fallback Hotspot"
+    password: !secret wifi_password
+
+captive_portal:
+    
+# D1 
+remote_receiver:
+  pin: 
+    number: GPIO5
+    inverted: true
+    mode: INPUT_PULLUP
+  tolerance: 55%
+  dump: lg #lg, all, raw
+  
+# D5 
+remote_transmitter:
+  pin: GPIO14
+  # Infrared remotes use a 50% carrier signal
+  carrier_duty_percent: 50%
+  
+# D2 
+output:
+  - platform: esp8266_pwm
+    id: esphome_ir1_led
+    pin:
+      number: GPIO4
+      inverted: false 
+
+light:
+  - platform: monochromatic
+    name: "White LED"
+    output: esphome_ir1_led
+    id: light_led
+
+sensor:
+  - platform: homeassistant 
+    entity_id: sensor.a4c1383321fe_temperature
+    id: room_temperature
+
+climate:
+  - platform: climate_ir_lg
+    name: "Living Room AC"
+    sensor: room_temperature
+
+switch: 
+  - platform: template
+    name: Raw_0 Power
+    turn_on_action:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: [9039, -4416, 627, -531, 599, -1620, 627, -1620, 626, -530, 599, -531, 599, -531, 598, -533, 595, -1628, 618, -536, 593, -1652, 594, -1653, 594, -538, 592, -1653, 594, -536, 594, -1652, 595, -536, 593, -1653, 594, -537, 594, -536, 593, -537, 593, -537, 593, -537, 593, -537, 593, -1653, 594, -537, 593, -1653, 594, -1653, 594, -1652, 594, -1653, 594, -1654, 593, -1653, 594, -537, 593]
+  - platform: template
+    name: Raw_1 Dry Mode
+    turn_on_action:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: [9064, -4391, 652, -504, 626, -1594, 653, -1594, 652, -504, 625, -505, 624, -506, 623, -508, 620, -1602, 644, -511, 617, -1628, 618, -1629, 618, -513, 617, -1629, 617, -513, 617, -1629, 618, -513, 617, -1629, 618, -513, 617, -513, 617, -1629, 618, -512, 617, -513, 617, -513, 618, -1629, 617, -513, 617, -1629, 617, -1630, 618, -513, 617, -1629, 617, -1629, 618, -1629, 618, -512, 618]
+  - platform: template
+    name: Raw_2 Plazma
+    turn_on_action:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: [9064, -4390, 654, -503, 626, -1593, 653, -1594, 653, -503, 627, -503, 626, -504, 625, -505, 623, -1598, 647, -509, 595, -1649, 596, -1651, 595, -538, 592, -1652, 594, -537, 594, -1652, 594, -537, 593, -533, 597, -536, 594, -1652, 594,-1653, 594, -537, 593, -536, 594, -536, 593, -1653, 594, -1653, 594, -1652, 594, -537, 593, -537, 594, -1652, 594, -1652, 594, -1653, 594, -537, 593]
+  - platform: template
+    name: Raw_3 Up
+    turn_on_action:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: [9065, -4389, 655, -503, 626, -1592, 655, -1592, 654, -503, 627, -503, 627, -503, 627, -503, 626, -1594, 651, -506, 623, -1598, 647, -1601, 644, -511, 593, -1652, 594, -537, 593, -1653, 594, -537, 593, -537, 593, -1653, 594, -1652, 594,-537, 593, -1653, 594, -537, 593, -537, 593, -1653, 594, -1652, 594, -537, 593, -537, 594, -1652, 594, -537, 593, -1653, 594, -1652, 594, -537, 593] 
+  - platform: template
+    name: Raw_4 Down
+    turn_on_action:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: [9064, -4389, 655, -503, 627, -1591, 655, -1592, 654, -504, 626, -504, 626, -503, 626, -504, 626, -1594, 651, -506, 623, -1598, 646, -1602, 619, -536, 593, -1652, 594, -538, 592, -1653, 594, -537, 593, -1653, 594, -1653, 594, -1653, 593, -537, 594, -1652, 594, -537, 593, -537, 593, -1653, 594, -537, 593, -537, 593, -536, 593, -1655, 592, -537, 593, -1653, 594, -1653, 594, -537, 593]
