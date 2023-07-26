@@ -8,7 +8,7 @@ Prototype 1st
 
 Prototype 2nd 
 
-Added light sensor to A0 pin for detection of operation of ourdoor unit. 
+Added light sensor to A0 pin for detection of operation of ourdoor unit(not working properly for now). 
 ```
 sensor:
   - platform: adc 
