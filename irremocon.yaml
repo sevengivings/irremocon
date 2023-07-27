@@ -14,10 +14,6 @@ api:
 ota:
   password: ""
 
-# secret.yaml 
-# domain: .local
-# wifi_ssid: "iptime_extender"
-# wifi_password: "XXXXXXXXXX"
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -45,7 +41,7 @@ remote_receiver:
     inverted: true
     mode: INPUT_PULLUP
   tolerance: 55%
-  dump: lg #lg, all, raw
+  dump: raw #lg, all, raw
   
 # D5 
 remote_transmitter:
@@ -67,18 +63,28 @@ light:
     output: esphome_ir1_led
     id: light_led
 
-# Use another temperature sensor in Home Assistant 
 sensor:
+  - platform: adc 
+    pin: A0 
+    name: "Outdoor Unit Operation"
+    filters:
+      - multiply: 3.3
+    id: outdoor_operation
   - platform: homeassistant 
     entity_id: sensor.a4c1383321fe_temperature
     id: room_temperature
+
+binary_sensor: 
+  - platform: analog_threshold
+    name: "On operation"
+    sensor_id: outdoor_operation 
+    threshold: 0.2
 
 climate:
   - platform: climate_ir_lg
     name: "Living Room AC"
     sensor: room_temperature
 
-# to capture your own raw data, set dump: raw 
 switch: 
   - platform: template
     name: Raw_0 Power
@@ -87,26 +93,45 @@ switch:
           carrier_frequency: 38kHz
           code: [9039, -4416, 627, -531, 599, -1620, 627, -1620, 626, -530, 599, -531, 599, -531, 598, -533, 595, -1628, 618, -536, 593, -1652, 594, -1653, 594, -538, 592, -1653, 594, -536, 594, -1652, 595, -536, 593, -1653, 594, -537, 594, -536, 593, -537, 593, -537, 593, -537, 593, -537, 593, -1653, 594, -537, 593, -1653, 594, -1653, 594, -1652, 594, -1653, 594, -1654, 593, -1653, 594, -537, 593]
   - platform: template
-    name: Raw_1 Dry Mode
+    name: Raw_1 Cold Mode
+    turn_on_action:
+      - remote_transmitter.transmit_raw:
+          carrier_frequency: 38kHz
+          code: [9004, -4455, 619, -509, 592, -1655, 592, -1634, 611, -541, 593, -537, 596, -536, 613, -515, 592, -1657, 611, -494, 613, -1655, 591, -1657, 591, -545, 585, -1664, 583, -539, 617, -1633, 611, -517, 613, -1633, 590, -1658, 612, -1610, 588, -1684, 560, -569, 617, -512, 595, -535, 617, -1631, 618, -512, 619, -511, 591, -541, 615, -513, 593, -1653, 616, -1631, 591, -1663, 584, -539, 591]
+  - platform: template
+    name: Raw_2 Dry Mode
     turn_on_action:
       - remote_transmitter.transmit_raw:
           carrier_frequency: 38kHz
           code: [9064, -4391, 652, -504, 626, -1594, 653, -1594, 652, -504, 625, -505, 624, -506, 623, -508, 620, -1602, 644, -511, 617, -1628, 618, -1629, 618, -513, 617, -1629, 617, -513, 617, -1629, 618, -513, 617, -1629, 618, -513, 617, -513, 617, -1629, 618, -512, 617, -513, 617, -513, 618, -1629, 617, -513, 617, -1629, 617, -1630, 618, -513, 617, -1629, 617, -1629, 618, -1629, 618, -512, 618]
   - platform: template
-    name: Raw_2 Plazma
+    name: Raw_3 Plazma
     turn_on_action:
       - remote_transmitter.transmit_raw:
           carrier_frequency: 38kHz
           code: [9064, -4390, 654, -503, 626, -1593, 653, -1594, 653, -503, 627, -503, 626, -504, 625, -505, 623, -1598, 647, -509, 595, -1649, 596, -1651, 595, -538, 592, -1652, 594, -537, 594, -1652, 594, -537, 593, -533, 597, -536, 594, -1652, 594,-1653, 594, -537, 593, -536, 594, -536, 593, -1653, 594, -1653, 594, -1652, 594, -537, 593, -537, 594, -1652, 594, -1652, 594, -1653, 594, -537, 593]
   - platform: template
-    name: Raw_3 Up
+    name: Raw_4 Up
     turn_on_action:
       - remote_transmitter.transmit_raw:
           carrier_frequency: 38kHz
           code: [9065, -4389, 655, -503, 626, -1592, 655, -1592, 654, -503, 627, -503, 627, -503, 627, -503, 626, -1594, 651, -506, 623, -1598, 647, -1601, 644, -511, 593, -1652, 594, -537, 593, -1653, 594, -537, 593, -537, 593, -1653, 594, -1652, 594,-537, 593, -1653, 594, -537, 593, -537, 593, -1653, 594, -1652, 594, -537, 593, -537, 594, -1652, 594, -537, 593, -1653, 594, -1652, 594, -537, 593] 
   - platform: template
-    name: Raw_4 Down
+    name: Raw_5 Down
     turn_on_action:
       - remote_transmitter.transmit_raw:
           carrier_frequency: 38kHz
           code: [9064, -4389, 655, -503, 627, -1591, 655, -1592, 654, -504, 626, -504, 626, -503, 626, -504, 626, -1594, 651, -506, 623, -1598, 646, -1602, 619, -536, 593, -1652, 594, -538, 592, -1653, 594, -537, 593, -1653, 594, -1653, 594, -1653, 593, -537, 594, -1652, 594, -537, 593, -537, 593, -1653, 594, -537, 593, -537, 593, -536, 593, -1655, 592, -537, 593, -1653, 594, -1653, 594, -537, 593]
+# not working
+#  - platform: template 
+#    name: LG Cold Mode
+#    turn_on_action:
+#      - remote_transmitter.transmit_lg:
+#          data: 0x656AF14E # Cold button 
+#          nbits: 32
+#  - platform: template 
+#    name: LG Reservation 1hr
+#    turn_on_action:
+#      - remote_transmitter.transmit_lg:
+#          data: 0x656AF916 # reservation 1hr
+#          nbits: 32
