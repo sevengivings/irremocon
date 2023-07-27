@@ -22,7 +22,7 @@ binary_sensor:
   - platform: analog_threshold
     name: "On operation"
     sensor_id: outdoor_operation 
-    threshold: 0.5
+    threshold: 0.2
 ```
 
 ![082527](https://github.com/sevengivings/irremocon/assets/2328500/e5b55d88-bc67-4413-acda-001425ad428d)
